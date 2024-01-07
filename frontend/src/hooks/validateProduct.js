@@ -1,14 +1,19 @@
 import { showAlert } from "../functions";
 
-export const validateProduct = ({id, name, description, price}) => {
-  if (name.trim() === "") {
-    showAlert("Escriba un nombre de producto", "warning");
-  } else if (description.trim() === "") {
-    showAlert("Escriba una descripcion de producto", "warning");
-  } else if (price.trim() === "") {
-    showAlert("Escriba un precio de producto", "warning");
-    document.getElementById("inputprice").focus();
+export const validateProduct = (row, inputRef) => {
+  const {id, name, description, price} = row
 
+  if (name.trim() === "") {
+    inputRef.name.current.focus();
+    showAlert("Escriba un nombre de producto", "warning");
+   
+  } else if (description.trim() === "") {
+    inputRef.description.current.focus();
+    showAlert("Escriba una descripcion de producto", "warning");
+
+  } else if (price.trim() === "") {
+    inputRef.price.current.focus();
+    showAlert("Escriba un precio de producto", "warning");
   } else {
     return ( true )
   }

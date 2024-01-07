@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Input = ({icon, type, id, name, placeholder, value, onInputChange}) => {
+export const Input = ({icon, type, id, refer, name, placeholder, value, onInputChange}) => {
   return (
     <>
       <span className="input-group-text">
@@ -8,6 +8,7 @@ export const Input = ({icon, type, id, name, placeholder, value, onInputChange})
       </span>
       <input
         id={id}
+        ref={refer}
         type={type}
         name={name}
         className="form-control"

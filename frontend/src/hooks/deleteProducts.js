@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { URL } from "../config";
 
-export const deleteProduct = async (id, name, dispatch) => {
+export const deleteProduct = (id, name, dispatch) => {
   const mySwal = withReactContent(Swal);
   mySwal
     .fire({

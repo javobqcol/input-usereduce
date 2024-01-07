@@ -1,14 +1,38 @@
-import { CREATE, DELETE_PRODUCT_FAILURE, DELETE_PRODUCT_SUCCESS, FETCH_DATA_FAILURE, FETCH_DATA_SUCCESS, UPDATE } from "./actions";
+import { CREATE_PRODUCT_FAILURE, CREATE_PRODUCT_SUCCESS, DELETE_PRODUCT_FAILURE, DELETE_PRODUCT_SUCCESS, FETCH_DATA_FAILURE, FETCH_DATA_SUCCESS, UPDATE_PRODUCT_FAILURE, UPDATE_PRODUCT_SUCCESS } from "./actions";
 
 export const reducer = (state, action) => {
   console.log("action=",action, " state=", state)
   switch (action.type) {
-    case CREATE:
-      return console.log("create Producto")
+
+    case CREATE_PRODUCT_SUCCESS:
+      return{
+        ...state,
+        loading: true,
+        products: [...state.products, action.payload.row],
+        error: ''
+      }
+
+    case CREATE_PRODUCT_FAILURE:
+      return{
+        ...state,
+        loading: true,
+        error: action.payload.error
+      }
       
-    case UPDATE:
-        return console.log("update products")
-    
+    case UPDATE_PRODUCT_SUCCESS:
+      return{
+        ...state,
+        loading: true,
+        products: state.products.map((product) => (product.id ===action.payload.row.id) ? action.payload.row :  product),
+        error: ''
+      }
+    case UPDATE_PRODUCT_FAILURE:
+      return{
+        ...state,
+        loading: true,
+        error: action.payload.error
+      }
+      
     case DELETE_PRODUCT_SUCCESS:
       return{
         ...state,

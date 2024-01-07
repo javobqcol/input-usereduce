@@ -1,7 +1,8 @@
 import { Input } from "./Input";
 
-export const Modal = ({ row, onInputChange, handleForm}) => {
+export const Modal = ({ row, inputRef, onInputChange, handleForm}) => {
   const { id, name, description, price } = row
+
   return (
     <>
       <form onSubmit={handleForm}>
@@ -11,7 +12,7 @@ export const Modal = ({ row, onInputChange, handleForm}) => {
           tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
-          aria-hidden="false"
+          aria-hidden="true"
           data-bs-backdrop="static"
           data-bs-keyboard="false"
         >
@@ -32,22 +33,24 @@ export const Modal = ({ row, onInputChange, handleForm}) => {
 
                 <input type="hidden" id="id" value={id} />
                 <div className="input-group mb-3">
-                  <Input icon={"fa-solid fa-gift"} type="text" id='inputname' placeholder='Name' name='name' value={name} onInputChange={onInputChange} />
+                  <Input icon={"fa-solid fa-gift"} type="text" refer={inputRef.name} id='inputname' placeholder='Name' name='name' value={name} onInputChange={onInputChange} />
                 </div>
                 <div className="input-group mb-3">
-                  <Input icon={"fa-solid fa-comment"} type="text" id='inputdescription' name='description' value={description} placeholder='Description' onInputChange={onInputChange} />
+                  <Input icon={"fa-solid fa-comment"} type="text" refer={inputRef.description} id='inputdescription' name='description' value={description} placeholder='Description' onInputChange={onInputChange} />
                 </div>
                 <div className="input-group mb-3">
-                 <Input icon={"fa-solid fa-dollar-sign"} type="text" id='inputprice' placeholder='Price' name='price' value={price} onInputChange={onInputChange} />
+                 <Input icon={"fa-solid fa-dollar-sign"} type="text" refer={inputRef.price} id='inputprice' placeholder='Price' name='price' value={price} onInputChange={onInputChange} />
 
                 </div>
               </div>
               <div className="modal-footer">
                 <button
                   type="button"
+                  id="btnCerrar"
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   aria-label="close"
+                  ref={inputRef.closeButton}
                 >
                   Close
                 </button>

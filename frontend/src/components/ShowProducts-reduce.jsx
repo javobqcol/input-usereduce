@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import axios from "axios";
 import { showAlert } from "../functions";
 import withReactContent from "sweetalert2-react-content";
@@ -11,6 +11,7 @@ import { initialStateReducer, initialStateRow } from "../hooks/actions";
 import { URL } from "../config";
 import { deleteProduct } from "../hooks/deleteProducts";
 import { validateProduct } from "../hooks/validateProduct";
+import { saveProduct } from "../hooks/saveProduct";
 
 
 export const ShowProducts = () => {
@@ -19,8 +20,15 @@ export const ShowProducts = () => {
 
   const [state, dispatch] = useReducer(reducer, initialStateReducer)
 
+  const inputRef = {
+    name: useRef(null),
+    description:useRef(null),
+    Price:useRef(null),
+    closeButton: useRef(null)
+  }
   useEffect(() => {
     getProducts(URL, dispatch);
+
   },[]);
 
   const { products, loading } = state
@@ -39,14 +47,11 @@ export const ShowProducts = () => {
     })
   }
 
-  const saveProduct = (row) =>{
-    console.log(row)
-  }
-
+ 
   const handleForm = ( e ) =>{
     e.preventDefault();
-    if ( validateProduct(row) ){
-      saveProduct(row)
+    if ( validateProduct(row, inputRef) ){
+      saveProduct(row, dispatch, inputRef.closeButton)
     }
 
   }
@@ -118,7 +123,7 @@ export const ShowProducts = () => {
           </tbody>
         </table>
       </div>
-      <Modal row={row} onInputChange={onInputChange} handleForm={handleForm}/>        
+      <Modal row={row} inputRef={inputRef} onInputChange={onInputChange} handleForm={handleForm}/>        
     </div>
     :<h1> no data</h1>}
     </>
