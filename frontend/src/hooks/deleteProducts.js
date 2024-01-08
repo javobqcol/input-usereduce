@@ -19,7 +19,7 @@ export const deleteProduct = (id, name, dispatch) => {
     .then(async (result) => {
       if (result.isConfirmed) {
         try {
-          console.log(`${URL}${id}`)
+
           await axios.delete(`${URL}${id}`)
           dispatch({
             type: DELETE_PRODUCT_SUCCESS,

@@ -3,7 +3,7 @@ import { CREATE_PRODUCT_FAILURE, CREATE_PRODUCT_SUCCESS, UPDATE_PRODUCT_FAILURE,
 import { URL } from "../config"
 
 export const saveProduct = async (row, dispatch, closeButton) =>{
-  console.log(row)
+
   if (row.id === ''){
     try{ 
       await axios.post(`${URL}${row.id}`, row)

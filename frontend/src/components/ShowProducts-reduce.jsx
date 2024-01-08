@@ -1,10 +1,6 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
-import axios from "axios";
-import { showAlert } from "../functions";
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { getProducts } from "../hooks/getProducts";
-import "./showproducts.css"
+import "./showproducts.css";
 import { Modal } from "./Modal";
 import { reducer } from "../hooks/reducer";
 import { initialStateReducer, initialStateRow } from "../hooks/actions";
@@ -12,121 +8,139 @@ import { URL } from "../config";
 import { deleteProduct } from "../hooks/deleteProducts";
 import { validateProduct } from "../hooks/validateProduct";
 import { saveProduct } from "../hooks/saveProduct";
-
+import { DataTable } from "./DataTable";
+import { Pagination } from "./Pagination";
+import { SelectLimit } from "./SelectLimit";
+import { EditButton } from "./EditButton";
 
 export const ShowProducts = () => {
+  const [row, setRow] = useState(initialStateRow);
 
-  const [row, setRow ] = useState(initialStateRow)
+  const [state, dispatch] = useReducer(reducer, initialStateReducer);
 
-  const [state, dispatch] = useReducer(reducer, initialStateReducer)
-
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [search, setSearch] = useState("")
+  const [productFilter, setProductFilter] = useState([])
   const inputRef = {
     name: useRef(null),
-    description:useRef(null),
-    Price:useRef(null),
-    closeButton: useRef(null)
-  }
+    description: useRef(null),
+    Price: useRef(null),
+    closeButton: useRef(null),
+  };
+
   useEffect(() => {
     getProducts(URL, dispatch);
+  }, []);
 
-  },[]);
+  const { products, loading } = state;
 
-  const { products, loading } = state
+  const rangeProducts = (page, limit  ) => {
+    return products.slice((page - 1) * limit, page * limit);
+  };
 
-  console.log("products", products," loading ", loading?"true":false)
-  
-  const editProduct = (product = initialStateRow) =>{ 
-    setRow(product)
+  const getLength = () => {
+    return products?.length;
+  };
+
+  const totalPage = Math.ceil(getLength() / limit);
+
+  let pageNo = page;
+  if (page > totalPage) {
+    setPage(totalPage);
+    pageNo = page;
   }
 
-  const onInputChange = ({ target }) =>{
-    const {name, value} = target
+  const editProduct = (product = initialStateRow) => {
+    setRow(product);
+  };
+
+  const onInputChange = ({ target }) => {
+    const { name, value } = target;
     setRow({
       ...row,
-      [name]: value
-    })
-  }
+      [name]: value,
+    });
+  };
 
- 
-  const handleForm = ( e ) =>{
-    e.preventDefault();
-    if ( validateProduct(row, inputRef) ){
-      saveProduct(row, dispatch, inputRef.closeButton)
+  const handlePageChange = (value) => {
+
+    switch (value) {
+      case "... ":
+      case "&laquo;":
+        setPage(1);
+        break;
+      case "&lsaquo;":
+        setPage(page !== 1 ? page - 1 : page);
+        break;
+      case "&rsaquo;":
+        setPage(page !== totalPage ? page + 1 : page);
+        break;
+      case " ...":
+      case "&raquo;":
+        setPage(totalPage);
+        break;
+
+      default:
+        setPage(value);
+        break;
     }
+  };
+
+  const handleForm = (e) => {
+    e.preventDefault();
+    if (validateProduct(row, inputRef)) {
+      saveProduct(row, dispatch, inputRef.closeButton);
+    }
+  };
+
+  const handleSearch =(e) =>{
+
+    setSearch(e.target.value)
+    const filterTable = products?.filter(o => Object.keys(o).some(k=> String(o[k]).toLowerCase().includes(e.target.value.toLowerCase())))
+    setProductFilter(filterTable)
+    console.log("filterTable=",filterTable)
 
   }
 
   return (
-    <> {loading ?
-    <div className="App">
-      <div className="container-fluid">
-        <div className="d-grid gap-2 col-6 mx-auto m-2">
-          <button
-            onClick={() => editProduct()}
-            className="btn btn-dark"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
-            <i className="fa-solid fa-circle-plus"></i> Añadir
-          </button>
+    <>
+      {" "}
+      {loading ? (
+        <div className="App">
+          <div className="container">
+            <EditButton editProduct={editProduct} />
+            <form className="my-3">
+             <input type="text" className="form-control" name="search" id="search" value={search} onChange={handleSearch} placeholder='Search' />
+            </form>
+            <DataTable
+              page={page}
+              limit={limit}
+              products={rangeProducts(page, limit)}
+              editProduct={editProduct}
+              deleteProduct={deleteProduct}
+            />
+            <div className="pagination-container">
+              <SelectLimit onLimitChange={setLimit} />
+              <Pagination
+                totalPage={totalPage}
+                page={pageNo}
+                limit={limit}
+                siblings={1}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          </div>
+          <Modal
+            row={row}
+            inputRef={inputRef}
+            onInputChange={onInputChange}
+            handleForm={handleForm}
+          />
         </div>
-        <table className="container table table-striped table-sm table-hover">
-          <thead className="table-dark">
-            <tr className="text-center">
-              <th >
-                <i>#</i>
-              </th>
-              <th>
-                <i>Products</i>
-              </th>
-              <th>
-                <i>Description</i>
-              </th>
-              <th>
-                <i>Price</i>
-              </th>
-              <th>
-                <i>Actions</i>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="table-striped">
-            {products.map((product, i) => (
-              <tr key={product.id}>
-                <th scope="row" className="text-center">
-                  {i + 1}
-                </th>
-                <td>{product.name}</td>
-                <td>{product.description}</td>
-                <td className="text-end">
-                  ${new Intl.NumberFormat("es-co").format(product.price)}
-                </td>
-                <td className="text-center ">
-                  <button
-                    onClick={() => editProduct(product)}
-                    className="btn btn-warning btn-sm mx-1"
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                  >
-                    <i className="fa fa-solid fa-edit "></i>
-                  </button>
-
-                  <button
-                    onClick={() => deleteProduct(product.id, product.name, dispatch)}
-                    className="btn btn-danger btn-sm mx-1"
-                  >
-                    <i className="fa fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <Modal row={row} inputRef={inputRef} onInputChange={onInputChange} handleForm={handleForm}/>        
-    </div>
-    :<h1> no data</h1>}
+      ) : (
+        <h1> no data</h1>
+      )}
     </>
-
   );
 };
