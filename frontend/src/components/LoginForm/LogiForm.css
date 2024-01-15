@@ -30,8 +30,10 @@
   height: 50px;
   margin: 30px 0;
 }
-
-.input-box input {
+.input-box{
+  position: relative;
+}
+.input-box .form__input {
   width: 100%;
   height: 100%;
   background: transparent;
@@ -41,11 +43,30 @@
   font-size: 16px;
   color: #fff;
   padding: 20px 45px 20px 20px;
-}
-.input-box input::placeholder{
-  color:#fff
+
 }
 
+form__input:not(:placeholder-shown){
+  color: #4d4646;
+}
+
+.form__input:focus + .form__label,
+.form__input:not(:placeholder-shown) + .form__label{
+  transform: translate(12px, -15px ) scale(.7);
+  transform-origin: left top;
+  color : #fff;
+}
+
+.form__label{
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  transform: translateY(10px);
+ 
+  transition: transform .5s, color .3s;
+}
 .input-box .icon{
   position: absolute;
   right: 20px;
@@ -75,11 +96,14 @@
   outline: none;
   box-shadow:  0 0 10px rgba(0, 0, 0, .1);
   cursor: pointer;
-  font-size: 16px;
-  color: #333;
+  font-size: 18px;
+  color: #000;
+  background: blue;
   font-weight: 700;
 }
-
+.wrapper button:hover{
+  background: #222286;
+}
 .wrapper .register-link{
   font-size: 14.5px;
   text-align: center;

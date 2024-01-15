@@ -71,11 +71,13 @@ export const LoginForm = () => {
           <form onSubmit={handleSubmit}>
             <h1>Login</h1>
             <div className="input-box">
-              <input type="text" placeholder="Email" autoComplete='off' ref={userRef} id='inputEmail' name='email' value={email} onChange={onInputChange} required/>
+              <input type="text" className='form__input' placeholder=" " autoComplete='off' ref={userRef} id='inputEmail' name='email' value={email} onChange={onInputChange} required/>
+              <label htmlFor="user" className="form__label">Email:</label>
               <i className="icon fa-solid fa-user"></i>
             </div>
             <div className="input-box">
-              <input type="password" placeholder="Password" autoComplete='off' id='inputpassword' name='password' value={password} onChange={onInputChange}required />
+              <input type="password" className='form__input' placeholder=" " autoComplete='off' id='inputpassword' name='password' value={password} onChange={onInputChange}required />
+              <label htmlFor="user" className="form__label">Password:</label>
               <i className="icon fa-solid fa-lock"></i>
             </div>
             <div className="remember-forgot">

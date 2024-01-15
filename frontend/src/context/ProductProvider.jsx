@@ -55,11 +55,17 @@ export const ProductsProvider = ( { children } ) => {
     
   },[]);
 
+  // const editProduct = (product = initialStateRow) => {
+  //   const {id, name, description, price} = product
+  //   setRow({...row, id,name, description, price});
+  // };
   const editProduct = (product = initialStateRow) => {
-    const {id, name, description, price} = product
-    setRow({...row, id,name, description, price});
+    const keys = Object.keys(product);
+    for (const key of keys) {
+      setRow({...row, [key]: product[key]});
+    }
   };
-
+  
   const saveProduct = async (row, closeButton) => {
     if (row.id === "") {
       try {
