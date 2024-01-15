@@ -1,6 +1,7 @@
 import { showAlert } from "../functions";
 
 export const validateProduct = (row, inputRef) => {
+  console.log(row)
   const {id, name, description, price} = row
 
   if (name.trim() === "") {

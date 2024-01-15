@@ -2,7 +2,7 @@ import { app } from "./app.js";
 import { sequalize } from "./database/database.js";
 import {
   EXPRESS_PORT
-} from "./config.js";
+} from "./config/config.js";
 
 const main = async() =>{
   try {

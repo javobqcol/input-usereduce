@@ -7,13 +7,13 @@ export const Products = sequalize.define('products',{
     autoIncrement: true
   },
   name: {
-    type:DataTypes.STRING
+    type:DataTypes.STRING,  allowNull: false
   },
   description:{
-    type:DataTypes.STRING
+    type:DataTypes.STRING,  allowNull: false
   },
   price :{
-    type:DataTypes.DECIMAL(10,2),
+    type:DataTypes.DECIMAL(10,2), allowNull: false
   },
 }, {
   timestamps: true

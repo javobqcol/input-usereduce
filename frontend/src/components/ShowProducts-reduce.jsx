@@ -1,27 +1,33 @@
-import { useEffect, useReducer, useRef, useState } from "react";
-import { getProducts } from "../hooks/getProducts";
+import { useContext, useRef, useState } from "react";
 import "./showproducts.css";
 import { Modal } from "./Modal";
-import { reducer } from "../hooks/reducer";
-import { initialStateReducer, initialStateRow } from "../hooks/actions";
-import { URL } from "../config";
-import { deleteProduct } from "../hooks/deleteProducts";
 import { validateProduct } from "../hooks/validateProduct";
-import { saveProduct } from "../hooks/saveProduct";
 import { DataTable } from "./DataTable";
-import { Pagination } from "./Pagination";
 import { SelectLimit } from "./SelectLimit";
 import { EditButton } from "./EditButton";
+import { Pagination } from "./Pagination";
+import { productContext } from "../context/context";
+import { initialStateRow } from "../hooks/actions";
 
 export const ShowProducts = () => {
-  const [row, setRow] = useState(initialStateRow);
 
-  const [state, dispatch] = useReducer(reducer, initialStateReducer);
+  const {
+    row, 
+    setRow,
+    editProduct,
+    products,
+    saveProduct,
+    deleteProduct,
+    loading,
+    productsFilter,
+    filterProducts
+} = useContext(productContext)
+ 
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("")
-  const [productFilter, setProductFilter] = useState([])
+  
   const inputRef = {
     name: useRef(null),
     description: useRef(null),
@@ -29,38 +35,23 @@ export const ShowProducts = () => {
     closeButton: useRef(null),
   };
 
-  useEffect(() => {
-    getProducts(URL, dispatch);
-  }, []);
 
-  const { products, loading } = state;
-
-  const rangeProducts = (page, limit  ) => {
-    return products.slice((page - 1) * limit, page * limit);
+  const rangeProducts = (page, limit) => {
+    return productsFilter.slice((page - 1) * limit, page * limit);
   };
 
-  const getLength = () => {
-    return products?.length;
-  };
-
-  const totalPage = Math.ceil(getLength() / limit);
-
-  let pageNo = page;
-  if (page > totalPage) {
-    setPage(totalPage);
-    pageNo = page;
+  const totalPage = (Math.ceil(productsFilter.length / limit) >= 1)
+          ? Math.ceil(productsFilter.length / limit)
+          : 1
+  if (page > totalPage){
+    setPage(totalPage > 0 ? totalPage: 1);
   }
+  
 
-  const editProduct = (product = initialStateRow) => {
-    setRow(product);
-  };
 
   const onInputChange = ({ target }) => {
     const { name, value } = target;
-    setRow({
-      ...row,
-      [name]: value,
-    });
+    setRow({...row, [name]: value});  
   };
 
   const handlePageChange = (value) => {
@@ -80,7 +71,6 @@ export const ShowProducts = () => {
       case "&raquo;":
         setPage(totalPage);
         break;
-
       default:
         setPage(value);
         break;
@@ -90,17 +80,14 @@ export const ShowProducts = () => {
   const handleForm = (e) => {
     e.preventDefault();
     if (validateProduct(row, inputRef)) {
-      saveProduct(row, dispatch, inputRef.closeButton);
+      saveProduct(row, inputRef.closeButton);
     }
   };
 
   const handleSearch =(e) =>{
-
     setSearch(e.target.value)
-    const filterTable = products?.filter(o => Object.keys(o).some(k=> String(o[k]).toLowerCase().includes(e.target.value.toLowerCase())))
-    setProductFilter(filterTable)
-    console.log("filterTable=",filterTable)
-
+    const filterTable = products.filter(o => Object.keys(o).some(k=> String(o[k]).toLowerCase().includes(e.target.value.toLowerCase())))
+    filterProducts(filterTable)
   }
 
   return (
@@ -109,7 +96,7 @@ export const ShowProducts = () => {
       {loading ? (
         <div className="App">
           <div className="container">
-            <EditButton editProduct={editProduct} />
+            <EditButton editProduct={() => editProduct()} />
             <form className="my-3">
              <input type="text" className="form-control" name="search" id="search" value={search} onChange={handleSearch} placeholder='Search' />
             </form>
@@ -124,9 +111,9 @@ export const ShowProducts = () => {
               <SelectLimit onLimitChange={setLimit} />
               <Pagination
                 totalPage={totalPage}
-                page={pageNo}
+                page={page}
                 limit={limit}
-                siblings={1}
+                siblings={2}
                 onPageChange={handlePageChange}
               />
             </div>
@@ -141,6 +128,6 @@ export const ShowProducts = () => {
       ) : (
         <h1> no data</h1>
       )}
-    </>
+    </> 
   );
 };

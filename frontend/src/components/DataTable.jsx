@@ -1,6 +1,7 @@
 import React from 'react'
 
-export const DataTable = ({ products, editProduct, deleteProduct, page, limit }) => {
+export const DataTable = ({ page, limit, products, editProduct, deleteProduct }) => {
+  console.log("product==", products)
   return (
     <table className="table table-striped table-sm table-hover">
     <thead className="table-dark">
@@ -35,16 +36,16 @@ export const DataTable = ({ products, editProduct, deleteProduct, page, limit })
           </td>
           <td className="text-center ">
             <button
-              onClick={() => editProduct(product)}
+              onClick={(e) => editProduct(product)}
               className="btn btn-warning btn-sm mx-1"
               data-bs-toggle="modal"
               data-bs-target="#exampleModal"
             >
-              <i className="fa fa-solid fa-edit "></i>
+              <i className="fa fa-solid fa-edit"></i>
             </button>
 
             <button
-              onClick={() => deleteProduct(product.id, product.name, dispatch)}
+              onClick={() => deleteProduct(product.id, product.name)}
               className="btn btn-danger btn-sm mx-1"
             >
               <i className="fa fa-solid fa-trash"></i>
