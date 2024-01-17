@@ -1,81 +1,81 @@
 import {
-  CREATE_PRODUCT_FAILURE,
-  CREATE_PRODUCT_SUCCESS,
-  DELETE_PRODUCT_FAILURE,
-  DELETE_PRODUCT_SUCCESS,
-  FETCH_DATA_FAILURE,
-  FETCH_DATA_SUCCESS,
-  FILTER_PRODUCTS,
-  UPDATE_PRODUCT_FAILURE,
-  UPDATE_PRODUCT_SUCCESS,
+  CREATE_USER_FAILURE,
+  CREATE_USER_SUCCESS,
+  DELETE_USER_FAILURE,
+  DELETE_USER_SUCCESS,
+  FETCH_DATA_USER_FAILURE,
+  FETCH_DATA_USER_SUCCESS,
+  FILTER_USERS,
+  UPDATE_USER_FAILURE,
+  UPDATE_USER_SUCCESS,
 } from "../hooks/actions";
 
-export const reducer = (state, action) => {
+export const productReducer = (state, action) => {
   switch (action.type) {
-    case CREATE_PRODUCT_SUCCESS:
+    case CREATE_USER_SUCCESS:
       return {
         ...state,
         loading: true,
-        products: [...state.products, action.payload.row],
+        users: [...state.users, action.payload.row],
         error: "",
       };
 
-    case CREATE_PRODUCT_FAILURE:
+    case CREATE_USER_FAILURE:
       return {
         ...state,
         loading: true,
         error: action.payload.error,
       };
 
-    case UPDATE_PRODUCT_SUCCESS:
+    case UPDATE_USER_SUCCESS:
       return {
         ...state,
         loading: true,
-        products: state.products.map((product) =>
-          product.id === action.payload.row.id ? action.payload.row : product
+        users: state.users.map((user) =>
+          user.id === action.payload.row.id ? action.payload.row : user
         ),
         error: "",
       };
-    case UPDATE_PRODUCT_FAILURE:
+    case UPDATE_USER_FAILURE:
       return {
         ...state,
         loading: true,
         error: action.payload.error,
       };
 
-    case DELETE_PRODUCT_SUCCESS:
+    case DELETE_USER_SUCCESS:
       return {
         ...state,
         loading: true,
-        products: state.products.filter(
+        users: state.users.filter(
           (x) => x.id !== action.payload.id
         ),
         error: "",
       };
-    case FILTER_PRODUCTS:{
+    case FILTER_USERS:{
 
       return {
         ...state,
         loading: true,
-        productsFilter: [...action.payload.productsFilter],
+        usersFilter: [...action.payload.usersFilter],
         error: "",
       };  
     }
-    case DELETE_PRODUCT_FAILURE:
+    case DELETE_USER_FAILURE:
       return {
         ...state,
         loading: true,
         error: action.payload.error,
       };
-    case FETCH_DATA_SUCCESS:
+    case FETCH_DATA_USER_SUCCESS:
       return {
         ...state,
         loading: true,
-        products: [...action.payload.data],
-        productsFilter: [...action.payload.data],
+        users: [...action.payload.data],
+        usersFilter: [...action.payload.data],
         error: "",
       };
-    case FETCH_DATA_FAILURE:
+    case FETCH_DATA_USER_FAILURE:
       return {
         ...state,
         loading: false,

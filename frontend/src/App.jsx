@@ -4,6 +4,7 @@ import "./App.css"
 import { ProductsProvider } from './context/ProductProvider'
 import { AuthProvider } from "./context/AuthProvider"
 import { LoginForm } from "./components/LoginForm/LoginForm"
+import { RegisterForm } from './components/RegisterForm/RegisterForm'
 
 export const App = () => {
 
@@ -15,6 +16,7 @@ export const App = () => {
             <Routes>
               <Route path='/' element={<LoginForm />} />
               <Route path='/products' element={<ShowProducts />} /> 
+              <Route path='/register' element={<RegisterForm/>} /> 
             </Routes>
           </BrowserRouter>
         </ProductsProvider>
