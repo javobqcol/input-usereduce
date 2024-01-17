@@ -1,8 +1,9 @@
 import { useEffect, useReducer, useState } from "react";
-import { productReducer} from "./productReducer";
+import { productReducer } from "./productReducer";
 import axios from "../api/axios";
 import {
-  initialStateProductReducer, initialStateProductRow ,
+  initialStateProductReducer,
+  initialStateProductRow,
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_FAILURE,
@@ -10,61 +11,60 @@ import {
   DELETE_PRODUCT_FAILURE,
   DELETE_PRODUCT_SUCCESS,
   FETCH_DATA_PRODUCT_FAILURE,
-  FETCH_DATA_PRODUCT_SUCCESS
-} from "../hooks/actions"
+  FETCH_DATA_PRODUCT_SUCCESS,
+} from "../hooks/actions";
 
-const PRODUCTS_URL = 'api/products'
+const PRODUCTS_URL = "api/products/";
 import withReactContent from "sweetalert2-react-content";
 import { showAlert } from "../functions";
 import Swal from "sweetalert2";
 import { productContext } from "./context";
 
-export const ProductsProvider = ( { children } ) => {
-
+export const ProductsProvider = ({ children }) => {
   const [row, setRow] = useState(initialStateProductRow);
-  const [state, dispatch] = useReducer(productReducer, initialStateProductReducer);
-
+  const [state, dispatch] = useReducer(
+    productReducer,
+    initialStateProductReducer
+  );
 
   useEffect(() => {
-    const getProducts = async() => {
+    const getProducts = async () => {
       try {
-        const response = await axios.get(PRODUCTS_URL)
+        const response = await axios.get(PRODUCTS_URL);
 
         dispatch({
           type: FETCH_DATA_PRODUCT_SUCCESS,
-          payload: { data: response?.data }
-        })    
+          payload: { data: response?.data },
+        });
       } catch (error) {
-        if (error.response){
+        if (error.response) {
           dispatch({
             type: FETCH_DATA_PRODUCT_FAILURE,
             error: {
-              data:error.response?.data,
-              status:error.response?.status,
-              header:error.response?.header }
-          })
+              data: error.response?.data,
+              status: error.response?.status,
+              header: error.response?.header,
+            },
+          });
         } else {
-        dispatch({
-          type: FETCH_DATA_PRODUCT_FAILURE,
-          error: error?.message
-        })
+          dispatch({
+            type: FETCH_DATA_PRODUCT_FAILURE,
+            error: error?.message,
+          });
         }
       }
     };
-    getProducts()    
-    
-  },[]);
+    getProducts();
+  }, []);
 
   // const editProduct = (product = initialStateProductRow) => {
   //   const {id, name, description, price} = product
   //   setRow({...row, id,name, description, price});
   // };
   const editProduct = (product = initialStateProductRow) => {
-
-    setRow(product)
+    setRow(product);
   };
 
-  
   const saveProduct = async (row, closeButton) => {
     if (row.id === "") {
       try {
@@ -73,7 +73,7 @@ export const ProductsProvider = ( { children } ) => {
           type: CREATE_PRODUCT_SUCCESS,
           payload: { row },
         });
-        editProduct()
+        editProduct();
         closeButton.current.click();
       } catch (error) {
         dispatch({
@@ -129,21 +129,19 @@ export const ProductsProvider = ( { children } ) => {
       });
   };
 
-
-
-  return(
-   <productContext.Provider
-    value={{
-      row: row,
-      setRow:setRow,
-      products: state.products,
-      loading:state.loading,
-      editProduct:editProduct,
-      saveProduct:saveProduct,
-      deleteProduct:deleteProduct,
-    }} 
-   >
-    {children} 
-   </productContext.Provider>
-  )
+  return (
+    <productContext.Provider
+      value={{
+        row: row,
+        setRow: setRow,
+        products: state.products,
+        loading: state.loading,
+        editProduct: editProduct,
+        saveProduct: saveProduct,
+        deleteProduct: deleteProduct,
+      }}
+    >
+      {children}
+    </productContext.Provider>
+  );
 };
