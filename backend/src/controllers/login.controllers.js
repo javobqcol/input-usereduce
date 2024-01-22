@@ -1,37 +1,48 @@
 import { compare } from "../helper/handleBcrypt.js";
-import { tokenSign } from "../helper/generateToken.js";
+import { generateToken } from "../helper/generateToken.js";
 import { Users } from "../models/users.js";
+import { Roles } from "../models/roles.js";
 import { handleError } from "../helper/handleError.js";
 
-
 export const loginUser = async (req, res) => {
-  console.log("aqui")
   try {
     const { email, password } = req.body;
-    console.log(email, " ",password)
-    const user = await Users.findOne({where: {email:email }})
+    const response = await Users.findOne({
+      where: { email: email },
+      include: [
+        {
+          model: Roles,
+          attributes: ["rolename", "active"],
+        },
+      ],
+    });
+    const user = response.toJSON();
     if (!user) {
-      res.status(404);
-      res.json({ msg: "User not found" });
+      res.status(404).json({ msg: "User not found" });
       return;
     }
     if (!user.active) {
-      res.status(404);
-      res.json({ msg: "User not active" });
+      res.status(423).json({ msg: "User not active" });
       return;
     }
+
     const chechPassword = await compare(password, user.password);
-    const tokenSession = await tokenSign(user);
     if (!chechPassword) {
-      res.status(409);
-      res.json({ msg: "Invalid password" });
+      res.status(409).json({ msg: "Invalid password" });
       return;
     }
-    res.json({
-      role:user.role,
-      tokenSession,
-    });
+
+    const tokenSession = generateToken(user);
+
+    res
+      .status(200)
+      .json({
+        token: tokenSession,
+        username: user.name,
+        email: user.email,
+        roles: user.roles,
+      });
   } catch (error) {
-    handleError(req, res, error);
+    return handleError(res, error);
   }
 };

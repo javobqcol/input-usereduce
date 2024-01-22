@@ -6,7 +6,7 @@ import {
 
 const main = async() =>{
   try {
-    await sequalize.sync({ alter: true})
+    await sequalize.sync()
     app.listen(EXPRESS_PORT)
     console.log('Server listenisn on port ', EXPRESS_PORT)
 

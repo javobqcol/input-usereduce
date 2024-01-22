@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SelectLimit } from "./SelectLimit";
 import { Pagination } from "./Pagination";
 
-export const DataTable = ({products, editProduct,  deleteProduct }) => {
+export const DataTable = ({products, handleEdit,  handleDelete,}) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("")
@@ -12,6 +12,9 @@ export const DataTable = ({products, editProduct,  deleteProduct }) => {
     return productsFilter.slice((page - 1) * limit, page * limit);
   };
 
+ useEffect(() => {
+   setProductFilter(products) 
+ }, [products])
  
   
   const totalPage =
@@ -97,7 +100,7 @@ export const DataTable = ({products, editProduct,  deleteProduct }) => {
               </td>
               <td className="text-center ">
                 <button
-                  onClick={(e) => editProduct(product)}
+                  onClick={(e) => handleEdit(product)}
                   className="btn btn-warning btn-sm mx-1"
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
@@ -106,7 +109,7 @@ export const DataTable = ({products, editProduct,  deleteProduct }) => {
                 </button>
 
                 <button
-                  onClick={() => deleteProduct(product.id, product.name)}
+                  onClick={() => handleDelete(product.id, product.name)}
                   className="btn btn-danger btn-sm mx-1"
                 >
                   <i className="fa fa-solid fa-trash"></i>

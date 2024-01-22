@@ -1,24 +1,26 @@
 import jwt from "jsonwebtoken";
+import { JWT_SECRET_ACCESS } from "../config/config.js";
 
-export const tokenSign = async (user) => {
-  return jwt.sign(
-    {
-      id: user.id,
-      role: user.role,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "2h",
-    }
-  );
+//creacion de token
+
+export const generateToken = (user) => {
+  const payload = {
+   id:user.id,
+  };
+  const token = jwt.sign(payload, JWT_SECRET_ACCESS, {
+    expiresIn: "1h",
+  });
+  return token;
 };
 
-export const verifyToken= async (token) => {
-  console.log(process.env.JWT_SECRET, ' Token:', token)
-  try {
-    console.log("jwt.verify(token, process.env.JWT_SECRET)",jwt.verify(token, process.env.JWT_SECRET))
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    return null;
-  }
+
+// Actualizacion de token
+export const generateNewToken = (user) => {
+  const payload = {
+    id:user.id,
+  };
+  const token = jwt.sign(payload, JWT_SECRET_ACCESS, {
+    expiresIn: "10m",
+  });
+  return token;
 };

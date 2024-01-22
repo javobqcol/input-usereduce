@@ -3,11 +3,16 @@ import { Products } from "../models/products.js";
 
 export const getProducts = async (req, res) => {
   try {
-    console.log("aqui")
     const products = await Products.findAll();
     res.json(products);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'Error de constraint' });
+    } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ECONNREFUSED') {
+      return res.status(500).json({ message: 'Error de conexión a la base de datos' });
+    } else {
+      return res.status(500).json({ message: 'Error interno del servidor' });
+    }
   }
 };
 
@@ -23,7 +28,13 @@ export const getProduct = async (req, res) => {
     res.json(product);
     
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'Error de constraint' });
+    } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ECONNREFUSED') {
+      return res.status(500).json({ message: 'Error de conexión a la base de datos' });
+    } else {
+      return res.status(500).json({ message: 'Error interno del servidor' });
+    }
   }
 };
 
@@ -39,7 +50,13 @@ export const createProduct = async (req, res) => {
     );
     res.json(newProduct);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'Error de constraint' });
+    } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ECONNREFUSED') {
+      return res.status(500).json({ message: 'Error de conexión a la base de datos' });
+    } else {
+      return res.status(500).json({ message: 'Error interno del servidor' });
+    }
   }
 };
 
@@ -60,9 +77,14 @@ export const updateProduct = async (req, res) => {
     });
     await updateProduct.save();
     res.json(updateProduct); 
-    console.log("por aqu  paso3")
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'Error de constraint' });
+    } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ECONNREFUSED') {
+      return res.status(500).json({ message: 'Error de conexión a la base de datos' });
+    } else {
+      return res.status(500).json({ message: 'Error interno del servidor' });
+    }
   }
 };
 
@@ -76,6 +98,12 @@ export const deleteProduct = async (req, res) => {
     });
     res.sendStatus(204);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'Error de constraint' });
+    } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ECONNREFUSED') {
+      return res.status(500).json({ message: 'Error de conexión a la base de datos' });
+    } else {
+      return res.status(500).json({ message: 'Error interno del servidor' });
+    }
   }
 };

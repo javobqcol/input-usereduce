@@ -1,28 +1,36 @@
-import { verifyToken } from "../helper/generateToken.js";
+import { JWT_SECRET_ACCESS } from "../config/config.js";
+import { Roles } from "../models/roles.js";
 import { Users } from "../models/users.js";
+import jwt from "jsonwebtoken";
 
-export const checkRoleAuth = (roles) => async (req, res, next) => {
-  let token = await req.headers["authorization"];
-  if (!token) {
-    //si  no existe token a la mierda
-    res.status(409);
-    res.send({ error: "tu por aqui no pasas" });
-    return;
+export const validateRoles = (roles) => async(req, res, next) => {
+
+  if (!req.headers?.authorization) {
+    return res
+      .status(401)
+      .send("No se ha especificado el token de autenticación");
   }
-  token = token.split(" ").pop();
-  const tokenData = await verifyToken(token);
-  if (tokenData === null) {
-    //el token no pasa la prueba... a la mierda
-    res.status(409);
-    res.send({ error: "tu por aqui no pasas" });
-    return;
+  const token = req.headers.authorization.split(" ").pop();
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET_ACCESS);
+    const id = payload.id;
+    const response = await Users.findByPk(id, { 
+      include: [{
+        model: Roles,
+        attributes: [ "rolename", "active"],
+      }]
+    })
+    const user = response.toJSON();
+    const userRoles = user.roles.filter(
+      (x) => x.active
+    )
+    if (!roles.includes(...userRoles)) {
+      return res.status(403).send("No tienes permiso para acceder a esta ruta");
+    }
+
+    next();
+  } catch (error) {
+    return res.status(401).send("Token no válido");
   }
-  const userData = await Users.findByPk(tokenData.id); //aqui ya es seguro que hay un token y es valido
-  if (![].concat(roles).includes(userData.role)) {
-    // no tienes rol pa la operacion? a la mierda
-    res.status(409);
-    res.send({ error: "no tienes permiso" });
-    return;
-  }
-  next(); // atravesaste el campo minado o eres la monda o el token es valido
 };

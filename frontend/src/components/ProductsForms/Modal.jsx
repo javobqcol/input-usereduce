@@ -2,7 +2,7 @@ import { Input } from "./Input";
 import "./Modal.css"
 export const Modal = ({ row, inputRef, onInputChange, handleForm}) => {
   const { id, name, description, price } = row
-  console.log("modal, row", row)
+
 
   return (
     <>

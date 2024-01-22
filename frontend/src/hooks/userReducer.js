@@ -8,7 +8,7 @@ import {
   FILTER_USERS,
   UPDATE_USER_FAILURE,
   UPDATE_USER_SUCCESS,
-} from "../hooks/actions";
+} from "./actions";
 
 export const productReducer = (state, action) => {
   switch (action.type) {

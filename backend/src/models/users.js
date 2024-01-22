@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequalize } from "../database/database.js";
+import { Roles } from "./roles.js";
 export const Users = sequalize.define('users',{
   id:{
     type: DataTypes.INTEGER,
@@ -12,9 +13,7 @@ export const Users = sequalize.define('users',{
   email:{
     type:DataTypes.STRING,  allowNull: false
   },
-  role: {
-    type:DataTypes.ENUM("user", "moderator", "administrator"), defaultValue: "user",  allowNull: false
-  },
+
   active:{
     type:DataTypes.BOOLEAN, defaultValue : true,  allowNull: false
   },
@@ -25,3 +24,8 @@ export const Users = sequalize.define('users',{
   timestamps: true,
   indexes: [{ unique: true, fields: ['email'] }]
 })
+Users.hasMany(Roles, {
+  foreignKey: 'userId',
+  sourceKey: 'id'
+})
+Roles.belongsTo(Users)

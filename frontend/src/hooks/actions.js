@@ -33,8 +33,7 @@ export const initialStateProductRow={
 export const initialStateLogin = {
   email:"",
   password:"",
-  errMsg:"",
-  success:false
+  errMsg:""
 }
 
 export const initialStateUserReduce = {
@@ -49,4 +48,9 @@ export const initialStateUserRow={
   username:'',
   email:'',
   password:''
+}
+export const ROLES ={
+  "User": "user",
+  "Moderator": "moderator",
+  "Admin": "admin"
 }

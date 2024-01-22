@@ -1,29 +1,36 @@
-
-import { verifyToken } from "../helper/generateToken.js";
+import { JWT_SECRET_ACCESS } from "../config/config.js";
+import { Roles } from "../models/roles.js";
 import { Users } from "../models/users.js";
+import jwt from "jsonwebtoken";
 
-export const checkAuth = async(req, res, next) =>{
-    console.log("por aqui")
-    let token = await req.headers["authorization"] //existe el encabezado de autorizacion?
-    if ( ! token ){ //si  no existe token a la mierda
-            res.status(409)
-            res.send({error : "No token Provided"})
-            return
-    }
-    token = token.split(' ').pop()
-    const tokenData = await verifyToken(token)
+export const validateUser = async (req, res, next) => {
+  if (!req.headers?.authorization) {
+    return res
+      .status(401)
+      .send("No se ha especificado el token de autenticación");
+  }
 
-    if ( tokenData === null){ //el token no pasa la prueba... a la mierda
-        res.status(409)
-        res.send({error : "Token invalido"})
-        return
-    }
-    console.log("tokenData",tokenData)
-    const userData = await Users.findByPk(tokenData.id)
-    if ( ! userData.active ){ // si el usario esta inactivo.. a la mierda
-        res.status(409)
-        res.send({error : "tu por aqui no pasas"})
-        return
-    }
-    next()  //si el token sortea el campo minado o el hacker es la monda o el token es valido
-}
+  const token = req.headers.authorization.split(" ").pop();
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET_ACCESS);
+
+    const id = payload.id;
+
+    const response = await Users.findByPk(id, { 
+      include: [{
+        model: Roles,
+        attributes: [ "rolename", "active"],
+      }]
+    })
+    const user = response.toJSON();
+
+     if (!user || !user.active) {
+       return res.status(401).send("fallo acutenticacion");
+     }
+
+    next();
+  } catch (error) {
+    return res.status(401).send("Token no válido");
+  }
+};

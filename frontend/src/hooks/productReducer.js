@@ -7,7 +7,7 @@ import {
   FETCH_DATA_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_FAILURE,
   UPDATE_PRODUCT_SUCCESS,
-} from "../hooks/actions";
+} from "./actions";
 
 export const productReducer = (state, action) => {
   switch (action.type) {
@@ -41,7 +41,6 @@ export const productReducer = (state, action) => {
         loading: true,
         error: action.payload.error,
       };
-
     case DELETE_PRODUCT_SUCCESS:
       return {
         ...state,
@@ -50,8 +49,7 @@ export const productReducer = (state, action) => {
           (x) => x.id !== action.payload.id
         ),
         error: "",
-      };
- 
+      }
     case DELETE_PRODUCT_FAILURE:
       return {
         ...state,
@@ -72,7 +70,6 @@ export const productReducer = (state, action) => {
         loading: false,
         error: "action.payload.error",
       };
-
     default:
       return { ...state };
   }

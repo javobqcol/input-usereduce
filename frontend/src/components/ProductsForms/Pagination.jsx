@@ -1,5 +1,5 @@
 import React from 'react'
-import { paginationRange } from '../hooks/PaginationUtils'
+import { paginationRange } from '../../hooks/PaginationUtils'
 
 export const Pagination = ({totalPage, page, limit, siblings, onPageChange}) => {
   const array = paginationRange(totalPage, page, limit, siblings)
