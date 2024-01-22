@@ -8,3 +8,5 @@ export const POSTGRES_HOST = process.env.POSTGRES_HOST
 export const EXPRESS_PORT =  process.env.EXPRESS_PORT
 export const JWT_SECRET_ACCESS = process.env.JWT_SECRET_ACCESS
 export const STATE = process.env?.STATE
+export const ADMINISTRATOR = process.env.ADMINISTRATOR
+export const PASSWORD = process.env.PASSWORD
