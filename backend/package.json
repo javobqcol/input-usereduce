@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src --out-dir build",
-    "dev": "nodemon src/index.js --exec babel-node",
-    "start": "node build/index.js"
+    "dev": "nodemon src/index.js",
+    "start": "node build/index.js",
+    "populate-db": "node src/seed/populate-db.js"
   },
   "engines": {
     "node": "19.x"

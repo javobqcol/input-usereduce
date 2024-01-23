@@ -51,7 +51,7 @@ export const createUser = async (req, res) => {
       {
         username: username,
         email: email,
-        active: active ? active : true,
+        active: true,
         password: userPass,
         roles: roles,
       },
@@ -71,7 +71,7 @@ export const updateUser = async (req, res) => {
     //traes el user con sus tareas
     const { id } = req.params;
 
-    const updateUser = await Users.findByPk(id, {
+    const response = await Users.findByPk(id, {
       include: [
         {
           model: Roles,
@@ -79,74 +79,57 @@ export const updateUser = async (req, res) => {
         },
       ],
     });
-    console.clear()
 
-    if (!updateUser) {
+    if (!response) {
       return res.status(404).json({ message: "user not exist" });
     }
+    const updateUser = response.toJSON();
+
     if (!updateUser?.active) {
       return res
         .status(401)
         .json({ message: "user inactive or not autorized" });
     }
 
-    const checkPassword = await compare(password, updateUser.password);
-
-    const userPass = checkPassword
+    const userPass = (await compare(password, updateUser.password))
       ? updateUser.password
       : await encrypt(password);
-    updateUser.set({
+
+    response.set({
       userName: username,
       email: email,
       active: active,
       password: userPass,
     });
 
-    req.body?.roles.map(async (rol) => {
-      if (!rol?.id) {
-        try {
-          const newRol = await Roles.create({
-            rolename: rol.rolename,
-            active: true,
-            userId: id,
-          });
-        } catch (error) {
-          return handleError(res, error);
-        }
-      } else {
-
-        try {
-          const updateRol = await Roles.findByPk(rol.id);
-          updateRol.set(rol);
-          await updateRol.save();
-        } catch (error) {
-          return handleError(res, error);
-        }
+    const rolesIniciales = [...updateUser.roles];
+    const userId = id
+    req.body?.roles?.map(async (rol) => {
+      try {
+        const [upsetRol, created] = await Roles.upsert({ //postgres and sqllite alwais create is null
+          id: rol?.id,
+          rolename: rol.rolename,
+          active: rol.active,
+          userId: userId,
+        });
+      } catch (error) {
+        return handleError(res, error);
       }
-      // finalemte se debe comprar las tareas pasadas por el backend
-      // se sacan  las tareas que tiene inicialmente el proyecto
-      // se compraran con las tareas suministradas por el backend
-      //se borran las tareas que esten en proyecto y que no suministre el backend
-
-      const ids = updateUser._previousDataValues?.roles.map(
-        (rol) => rol?.dataValues.id
-      );
-
-      ids.map(async (id) => {
-        try {
-          if (!req.body?.roles.map((rol) => rol.id).includes(id)) {
-            await Roles.destroy({
-              where: {
-                id,
-              },
-            });
-          }
-        } catch (error) {
-          return handleError(res, error);
-        }
-      });
     });
-    await updateUser.save();
+    rolesIniciales.map(async (rol) => {
+      try {
+        if (!req.body?.roles?.find((row) => row.id === rol.id)) {
+          await Roles.destroy({
+            where: {
+              id: rol.id,
+            },
+          });
+        }
+      } catch (error) {
+        return handleError(res, error);
+      }
+    });
+    await response.save();
     res.json(updateUser);
   } catch (error) {
     return handleError(res, error);

@@ -8,13 +8,13 @@ import {
   STATE,
 } from "../config/config.js";
 
-export const sequalize =
+export const sequelize =
   STATE === "DEV"
     ? new Sequelize("database", "user", "password", {
         port: "localhost",
         dialect: "sqlite",
         logging: false,
-        storage: "src/database/database.sqlite",
+        storage: "src/data/database.sqlite",
       })
     : new Sequelize(POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, {
         host: POSTGRES_HOST,

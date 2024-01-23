@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import { sequalize } from "../database/database.js";
-export const Products = sequalize.define('products',{
+import { sequelize } from "../database/database.js";
+export const Products = sequelize.define('products',{
   id:{
     type: DataTypes.INTEGER,
     primaryKey: true,
