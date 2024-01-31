@@ -1,30 +1,35 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axios";
-const USERS_URL = "api/users";
+
+import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
+import { useNavigate, useLocation } from "react-router-dom"
+
+const USERS_URL = "/api/v1/auth/protected";
 
 export const Users = () => {
-  axios;
   const [users, setUsers] = useState();
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
     const getUsers = async () => {
       try {
-        const response = axios.get(USERS_URL, {
+        const response = await axiosPrivate.get(USERS_URL, {
           signal: controller.signal,
         });
-        console.log(response.data);
         isMounted && setUsers(response.data);
       } catch (error) {
         console.error(error);
+        navigate('/login', { state: { from: location }, replace: true });
       }
     };
     getUsers();
-    return () =>{
-      isMounted = false
-      controller.abort()
-    }
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, []);
 
   return (
@@ -33,12 +38,13 @@ export const Users = () => {
       {users?.length ? (
         <ul>
           {users.map((user, i) => (
-            <li key={i}>{user.usename}</li>
+            <li key={i}>{user.username}</li>
           ))}
         </ul>
       ) : (
         <p> No user to display</p>
       )}
+      <br />
     </article>
   );
 };

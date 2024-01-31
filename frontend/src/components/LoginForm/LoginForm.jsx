@@ -1,11 +1,11 @@
-import {  useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./LogiForm.css";
 import axios from "../../api/axios";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { initialStateLogin } from "../../hooks/actions";
 import { useAuth } from "../../hooks/useAuth";
-const LOGIN_URL = "api/login";
+const LOGIN_URL = "api/v1/auth/login";
 
 export const LoginForm = () => {
   const userRef = useRef();
@@ -34,12 +34,20 @@ export const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(LOGIN_URL, { email, password });
-      console.log(response)
+      const response = await axios.post(
+        LOGIN_URL,
+        { email, password },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+      }
+      );
+
       const token = response?.data?.token;
+      console.log(response)
       const roles = response?.data?.roles;
-      console.log("a=",response, roles, token)
-      setAuth({ email:email, password:password, roles:roles, token:token });
+
+      setAuth({ email: email, password: password, roles: roles, token: token });
 
       setUser({ ...user, success: true, email: "", password: "" });
       navigate(from, { replace: true });
@@ -105,10 +113,7 @@ export const LoginForm = () => {
         <button type="submit">Login</button>
         <div className="register-link">
           <p>
-            Dont have an account?{" "}
-            <Link to="/register">
-              Register
-            </Link>
+            Dont have an account? <Link to="/register">Register</Link>
           </p>
         </div>
         <div className="error-section">

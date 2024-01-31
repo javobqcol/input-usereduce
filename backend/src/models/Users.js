@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/database.js";
-import { Roles } from "./roles.js";
-export const Users = sequelize.define('users',{
+import  Roles  from "./Roles.js";
+const Users = sequelize.define('users',{
   id:{
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -29,3 +29,4 @@ Users.hasMany(Roles, {
   sourceKey: 'id'
 })
 Roles.belongsTo(Users)
+export default Users

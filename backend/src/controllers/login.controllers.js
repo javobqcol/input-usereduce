@@ -1,12 +1,15 @@
-import { compare } from "../helper/handleBcrypt.js";
-import { generateToken } from "../helper/generateToken.js";
-import { Users } from "../models/users.js";
-import { Roles } from "../models/roles.js";
-import { handleError } from "../helper/handleError.js";
+import { compare } from "../helpers/handleBcrypt.js";
+import { generateToken } from "../helpers/generateToken.js";
+import { Users } from "../models/Users.js";
+import { Roles } from "../models/Roles.js";
+import { handleError } from "../helpers/handleError.js";
 
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!user || !password) {
+      return res.status(400).json({ msg: "All fields are required" })
+    }
     const response = await Users.findOne({
       where: { email: email },
       include: [
@@ -18,30 +21,30 @@ export const loginUser = async (req, res) => {
     });
     const user = response.toJSON();
 
-    if (!user) {
-      res.status(404).json({ msg: "User not found" });
-      return;
-    }
-    if (!user.active) {
-      res.status(423).json({ msg: "User not active" });
+    if (!user || !user.active) {
+      res.status(401).json({ msg: "Unauthorized" });
       return;
     }
 
     const chechPassword = await compare(password, user.password);
     if (!chechPassword) {
-      res.status(409).json({ msg: "Invalid password" });
+      res.status(401).json({ msg: "Unauthorized" });
       return;
     }
 
-    const tokenSession = generateToken(user);
+    const accessToken = generateToken(user);
 
+    const refreshToken = generateNewToken(user);
+    res.cookie('jwt',refreshToken, {
+      httpOnly:true,
+      secure:true,
+      sameSite:'None',
+      maxAge: 7*24*60*60*1000
+    })
     res
       .status(200)
       .json({
-        token: tokenSession,
-        username: user.name,
-        email: user.email,
-        roles: user.roles,
+        token: accessToken
       });
   } catch (error) {
     return handleError(res, error);

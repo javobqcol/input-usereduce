@@ -1,8 +1,8 @@
-import { Users } from "../models/users.js";
-import { compare, encrypt } from "../helper/handleBcrypt.js";
+import { Users } from "../models/Users.js";
+import { compare, encrypt } from "../helpers/handleBcrypt.js";
 
-import { Roles } from "../models/roles.js";
-import { handleError } from "../helper/handleError.js";
+import { Roles } from "../models/Roles.js";
+import { handleError } from "../helpers/handleError.js";
 
 export const getUsers = async (req, res) => {
   try {

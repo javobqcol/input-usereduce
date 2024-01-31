@@ -9,22 +9,22 @@ const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PWD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\*!@#$%&/\(\)=?¿_\-]).{8,24}$/;
-const REGISTER_URL = "/api/users";
+const REGISTER_URL = "/api/v1/auth/register";
 
 export const RegisterForm = () => {
   const registerRef = {
-    userNameRef: useRef(),
+    usernameRef: useRef(),
     emailRef: useRef(),
     errRef: useRef(),
   };
   const [user, setUser] = useState(initialStateUserRow);
 
-  const { userName, email, password, matchPassword } = user;
-  const { emailRef, errRef, userNameRef } = registerRef;
+  const { username, email, password, matchPassword } = user;
+  const { emailRef, errRef, usernameRef } = registerRef;
   const navigate = useNavigate();
 
-  const [validUserName, setValidUserName] = useState(false);
-  const [userNameFocus, setUserNameFocus] = useState(false);
+  const [validUsername, setValidUsername] = useState(false);
+  const [usernameFocus, setUsernameFocus] = useState(false);
 
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
@@ -41,13 +41,13 @@ export const RegisterForm = () => {
   const [verPassword, setVerPassword] = useState(false);
 
   useEffect(() => {
-    userNameRef.current.focus();
+    usernameRef.current.focus();
   }, []);
 
   useEffect(() => {
-    setValidUserName(USERNAME_REGEX.test(userName));
+    setValidUsername(USERNAME_REGEX.test(username));
 
-  }, [userName]);
+  }, [username]);
 
   useEffect(() => {
     setValidEmail(EMAIL_REGEX.test(email));
@@ -60,7 +60,7 @@ export const RegisterForm = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [userName, email, password, matchPassword]);
+  }, [username, email, password, matchPassword]);
 
 
   const onInputChange = ({ target }) => {
@@ -86,9 +86,10 @@ export const RegisterForm = () => {
     try {
 
       const response = await axios.post(REGISTER_URL, {
-        username: userName,
+        username: username,
         email: email,
         password: password,
+        repassword:matchPassword,
         roles:[{rolename:"user", active: true}]
       });
       setUser(initialStateUserRow)
@@ -127,29 +128,29 @@ export const RegisterForm = () => {
                 <input
                   className="form__input"
                   type="text"
-                  id="userName"
-                  name="userName"
+                  id="username"
+                  name="username"
                   placeholder=" "
-                  ref={userNameRef}
-                  autoComplete="off"
+                  ref={usernameRef}
+                  autoComplete="off"validMatch
                   onChange={onInputChange}
-                  value={userName}
+                  value={username}
                   required
-                  aria-invalid={validUserName ? "false" : "true"}
+                  aria-invalid={validUsername ? "false" : "true"}
                   aria-describedby="uidnote"
-                  onFocus={() => setUserNameFocus(true)}
-                  onBlur={() => setUserNameFocus(false)}
+                  onFocus={() => setUsernameFocus(true)}
+                  onBlur={() => setUsernameFocus(false)}
                 />
                 <label className="form__label" htmlFor="emailname">
                   Username:&nbsp;
                   <i
                     className={
-                      validUserName ? "fa-solid fa-check" : "offscreen"
+                      validUsername ? "fa-solid fa-check" : "offscreen"
                     }
                   />
                   <i
                     className={
-                      !validUserName || !userName
+                      !validUsername || !username
                         ? "fa-solid fa-times"
                         : "offscreen"
                     }
@@ -159,7 +160,7 @@ export const RegisterForm = () => {
                 <p
                   id="uidnote"
                   className={
-                    userNameFocus && !validUserName
+                    usernameFocus && !validUsername
                       ? "instructions"
                       : "offscreen"
                   }

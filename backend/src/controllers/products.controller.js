@@ -96,7 +96,7 @@ export const deleteProduct = async (req, res) => {
         id,
       },
     });
-    res.sendStatus(204);
+    res.status(204);
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(409).json({ message: 'Error de constraint' });

@@ -3,4 +3,4 @@ import { refreshToken } from "../controllers/refresh.controler.js";
 
 export const router = Router();
 
-router.post("/", refreshToken);
+router.get("/", refreshToken);

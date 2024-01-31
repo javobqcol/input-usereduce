@@ -16,7 +16,6 @@ import { Home } from "./components/Home";
 import { ROLES } from "./hooks/actions";
 
 export const App = () => {
-
   return (
     <>
       <Routes>
@@ -24,22 +23,22 @@ export const App = () => {
           {/* Public routes */}
           <Route path="login" element={<LoginForm />} />
           <Route path="register" element={<RegisterForm />} />
-          <Route path="linkpage" element={<LinkPage/>} />
+          <Route path="linkpage" element={<LinkPage />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
           {/* provate routes */}
-          <Route element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]}/>}>
-            <Route path="/" element={<Home />}/>
+          <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+            <Route path="/" element={<Home />} />
             <Route path="products" element={<ShowProducts />} />
-            <Route path="lounge" element={<Lounge/>}/>
-
           </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Moderator]}/>}>
-            <Route path="editor" element={<Editor/>}/>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Moderator]} />}>
+            <Route path="editor" element={<Editor />} />
           </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]}/>}>
-
-            <Route path="admin" element={<Admin/>}/>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+            <Route path="admin" element={<Admin />} />
+          </Route>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin, ROLES.Moderator]} />}>
+            <Route path="admin" element={<Lounge />} />
           </Route>
           <Route path="*" element={<Missing />} />
         </Route>

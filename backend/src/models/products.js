@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/database.js";
-export const Products = sequelize.define('products',{
+const Products = sequelize.define('products',{
   id:{
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -18,3 +18,5 @@ export const Products = sequelize.define('products',{
 }, {
   timestamps: true
 })
+
+export default Products

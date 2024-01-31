@@ -1,36 +1,30 @@
-import { JWT_SECRET_ACCESS } from "../config/config.js";
-import { Roles } from "../models/roles.js";
-import { Users } from "../models/users.js";
-import jwt from "jsonwebtoken";
+import { refreshToken } from "../controllers/auth.controller.js";
+import Roles from "../models/Roles.js";
+import User from "../models/Users.js";
 
-export const validateRoles = (roles) => async(req, res, next) => {
-
-  if (!req.headers?.authorization) {
-    return res
-      .status(401)
-      .send("No se ha especificado el token de autenticación");
-  }
-  const token = req.headers.authorization.split(" ").pop();
-
+export const checkRoleAuth = (rolList) => async (req, res, next) => {
   try {
-    const payload = jwt.verify(token, JWT_SECRET_ACCESS);
-    const id = payload.id;
-    const response = await Users.findByPk(id, { 
-      include: [{
-        model: Roles,
-        attributes: [ "rolename", "active"],
-      }]
-    })
-    const user = response.toJSON();
-    const userRoles = user.roles.filter(
-      (x) => x.active
-    )
-    if (!roles.includes(...userRoles)) {
-      return res.status(403).send("No tienes permiso para acceder a esta ruta");
+    if (!req?.uid) {
+      throw new Error("No token provided"); // no uid ... no token --> error
     }
-
-    next();
+    const response = await User.findByPk(req.uid, {
+      include: [
+        {
+          model: Roles,
+          attributes: ["rolename", "active"],
+        },
+      ],
+    }) //aqui ya es seguro que hay un token y es valido
+    const userData = response.toJSON()
+    for (const rol of rolList) {
+      if (userData.roles.find((r) => (r.rolename === rol && r.active))) {
+        //  tienes rol pa la operacion? pasa (ahora un usuario puede tener varios role y se puede dar acceso a varios roles tambien)
+        req.roles = userData.roles;
+        return next();
+      }
+    }
+    throw new Error("No autorization"); // no tienes rol pa la operacion? -->  error
   } catch (error) {
-    return res.status(401).send("Token no válido");
+    return res.status(401).json({ error: error?.message });
   }
 };
