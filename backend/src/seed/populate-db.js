@@ -1,9 +1,8 @@
 import { ADMINISTRATOR, PASSWORD } from "../config/config.js";
 import { sequelize } from "../database/database.js";
-import { encrypt } from "../helper/handleBcrypt.js";
-import { Roles } from "../models/roles.js";
-
-import { Users } from "../models/users.js";
+import { encrypt } from "../helpers/handleBcrypt.js";
+import Roles from "../models/Roles.js";
+import Users from "../models/Users.js";
 
 const populateDatabase = async () => {
   await sequelize

@@ -4,7 +4,15 @@ const REFRESH_URL="/api/v1/auth/refresh"
 export const useRefreshToken = () => {
   const {setAuth } = useAuth()
   const refresh = async() =>{
-    const response = await axios.post(REFRESH_URL, {
+    try {
+      const response = await axios.get(REFRESH_URL, {
+        withCredentials: true
+      })
+        
+    } catch (error) {
+      console.log(error)      
+    }
+    const response = await axios.get(REFRESH_URL, {
       withCredentials:true
     })
     setAuth(prev => {
