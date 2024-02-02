@@ -13,6 +13,7 @@ export const generateToken = (uid) => {
 export const generateRefreshToken = (uid, res) => {
   try {
     const expiresIn = 60 * 60 * 24 * 30;
+    //const expiresIn = 60 * 15;
     const refreshToken = jwt.sign(
       {
         uid: uid,

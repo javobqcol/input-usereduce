@@ -8,7 +8,7 @@ const main = async() =>{
   try {
     await sequelize.sync()
 
-    app.listen(EXPRESS_PORT)
+    app.listen(EXPRESS_PORT) 
     console.log('Server listening on port ', EXPRESS_PORT)
 
   } catch (error) {

@@ -3,10 +3,11 @@ import { sequelize } from "../database/database.js";
 import { encrypt } from "../helpers/handleBcrypt.js";
 import Roles from "../models/Roles.js";
 import Users from "../models/Users.js";
+import Vehicles from "../models/vehicles.js"
 
 const populateDatabase = async () => {
   await sequelize
-    .sync({ force: false })
+    .sync({ force: true })
     .then(async () => {
       const userPass = await encrypt(PASSWORD);
 

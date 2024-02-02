@@ -38,7 +38,8 @@ export const Users = () => {
       {users?.length ? (
         <ul>
           {users.map((user, i) => (
-            <li key={i}>{user.username}</li>
+            <li key={i}>{user.username+" "}
+            {user.roles.map(role => (role.rolename+", "))}</li>
           ))}
         </ul>
       ) : (
