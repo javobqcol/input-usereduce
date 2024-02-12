@@ -9,7 +9,7 @@ export const validationResultExpress = (req, res, next) =>{
 
 export const bodyRegisterValidator = [
   body("email", "Format Error").trim().isEmail().normalizeEmail(),
-  body("password", "Format Error").trim().isLength({ min: 6 }),
+  body("password", "Format Error").trim().isLength({ min: 5 }),
   body("password", "Format Error").custom((value, { req }) => {
     if (value !== req.body.repassword) {
       throw new Error("no coinciden las contraseñas");

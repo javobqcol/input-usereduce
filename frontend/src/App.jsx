@@ -1,48 +1,63 @@
-import { Routes, Route } from "react-router-dom";
-import { ShowProducts } from "./components/ProductsForms/ShowProducts-reduce";
+import { Container } from "@mui/material";
 import "./App.css";
+import { Navbar } from "./navbar/Navbar";
 
-import { LoginForm } from "./components/LoginForm/LoginForm";
-import { RegisterForm } from "./components/RegisterForm/RegisterForm";
-import { Layout } from "./components/Layout";
-import { Missing } from "./components/Missing";
-import { RequireAuth } from "./components/RequireAuth";
-import { LinkPage } from "./components/LinkPage";
-import { Editor } from "./components/Editor";
-import { Admin } from "./components/Admin";
-import { Lounge } from "./components/Lounge";
-import { Unauthorized } from "./components/Unautorized";
+import { Route, Routes } from "react-router-dom";
 import { Home } from "./components/Home";
+import LoginIcon from "@mui/icons-material/Login";
+import HomeIcon from "@mui/icons-material/Home";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import PersonIcon from '@mui/icons-material/Person';
+import { Login} from "./components/Login";
+import { Register } from "./components/Register";
+import { Layout } from "./components/Layout";
+import { Users } from "./components/Users";
+import { Unauthorized } from "./components/Unautorized";
+import { RequireAuth } from "./components/RequireAuth";
 import { ROLES } from "./hooks/actions";
 
-export const App = () => {
+const navArrayLinks = [
+  {
+    title: "Users",
+    path: "/users",
+    icon: <PersonIcon />,
+  },
+  {
+    title: "home",
+    path: "/",
+    icon: <HomeIcon />,
+  },
+  {
+    title: "Login",
+    path: "/login",
+    icon: <LoginIcon />,
+  },
+  {
+    title: "Register",
+    path: "/register",
+    icon: <HowToRegIcon />,
+  },
+];
+const App = () => {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          {/* Public routes */}
-          <Route path="login" element={<LoginForm />} />
-          <Route path="register" element={<RegisterForm />} />
-          <Route path="linkpage" element={<LinkPage />} />
-          <Route path="unauthorized" element={<Unauthorized />} />
+      <Navbar navArrayLinks={navArrayLinks}/>
+      <Container sx={{ mt: 3 }}>
+        <Routes>
+          <Route path="/" element={<Layout/>}>
+             {/* Public routes */}
+            <Route path="login" element={<Login/>}/>
+            <Route path="register" element={<Register/>}/>
+            <Route path="unauthorized" element={<Unauthorized />} />
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
 
-          {/* provate routes */}
-          <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
-            <Route path="/" element={<Home />} />
-            <Route path="products" element={<ShowProducts />} />
+              <Route path="users" element={<Users />} />
+            </Route>
           </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Moderator]} />}>
-            <Route path="editor" element={<Editor />} />
-          </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-            <Route path="admin" element={<Admin />} />
-          </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin, ROLES.Moderator]} />}>
-            <Route path="admin" element={<Lounge />} />
-          </Route>
-          <Route path="*" element={<Missing />} />
-        </Route>
-      </Routes>
+        </Routes>
+      </Container>
     </>
   );
 };
+
+export default App;

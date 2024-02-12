@@ -8,19 +8,16 @@ export const useRefreshToken = () => {
       const response = await axios.get(REFRESH_URL, {
         withCredentials: true
       })
-        
-    } catch (error) {
-      console.log(error)      
-    }
-    const response = await axios.get(REFRESH_URL, {
-      withCredentials:true
-    })
     setAuth(prev => {
       console.log(JSON.stringify(prev))
       console.log(response.data.token)
       return {...prev,token: response.data.token}
     })
     return response.data.token
+        
+    } catch (error) {
+      return error    
+    }
   }
   return refresh
 }

@@ -1,8 +1,9 @@
-import { Users } from "../models/Users.js";
+import Users from "../models/Users.js";
 import { compare, encrypt } from "../helpers/handleBcrypt.js";
+import Roles from "../models/Roles.js";
 
-import { Roles } from "../models/Roles.js";
-import { handleError } from "../helpers/handleError.js";
+
+
 
 export const getUsers = async (req, res) => {
   try {
@@ -14,9 +15,9 @@ export const getUsers = async (req, res) => {
         },
       ],
     });
-    res.json(users);
+    return res.status(200).json( users );
   } catch (error) {
-    return handleError(res, error);
+    return res.status(401).json({ error: error?.message });
   }
 };
 
@@ -37,7 +38,7 @@ export const getUser = async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    return handleError(res, error);
+    return res.status(401).json({ error: error?.message });
   }
 };
 
@@ -60,7 +61,7 @@ export const createUser = async (req, res) => {
 
     res.json(newUser);
   } catch (error) {
-    return handleError(res, error);
+    return res.status(401).json({ error: error?.message });
   }
 };
 
@@ -83,17 +84,12 @@ export const updateUser = async (req, res) => {
     if (!response) {
       return res.status(404).json({ message: "user not exist" });
     }
-    const updateUser = response.toJSON();
-
-    if (!updateUser?.active) {
-      return res
-        .status(401)
-        .json({ message: "user inactive or not autorized" });
-    }
-
-    const userPass = (await compare(password, updateUser.password))
-      ? updateUser.password
-      : await encrypt(password);
+    const updateUser = response.toJSON()
+   
+   // if (password !== updateUser.password)
+    const userPass = (password === updateUser.password) || await compare(password, updateUser.password)
+                ? updateUser.password
+                : await encrypt(password);
 
     response.set({
       userName: username,
@@ -101,7 +97,6 @@ export const updateUser = async (req, res) => {
       active: active,
       password: userPass,
     });
-
     const rolesIniciales = [...updateUser.roles];
     const userId = id
     req.body?.roles?.map(async (rol) => {
@@ -113,7 +108,7 @@ export const updateUser = async (req, res) => {
           userId: userId,
         });
       } catch (error) {
-        return handleError(res, error);
+        return res.status(401).json({ error: error?.message });
       }
     });
     rolesIniciales.map(async (rol) => {
@@ -126,13 +121,13 @@ export const updateUser = async (req, res) => {
           });
         }
       } catch (error) {
-        return handleError(res, error);
+        return res.status(401).json({ error: error?.message });
       }
     });
     await response.save();
     res.json(updateUser);
   } catch (error) {
-    return handleError(res, error);
+    return res.status(401).json({ error: error?.message });
   }
 };
 
@@ -146,6 +141,6 @@ export const deleteUser = async (req, res) => {
     });
     res.sendStatus(204);
   } catch (error) {
-    return handleError(res, error);
+    return res.status(401).json({ error: error?.message });
   }
 };

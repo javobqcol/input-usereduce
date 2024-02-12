@@ -26,7 +26,9 @@ export const login = async (req, res) => {
       throw new Error("Authorization problem");
     }
     const checkPassword = await compare(password, user.password);
+
     if (!checkPassword) {
+    
       throw new Error("Authorization problem");
     }
 
@@ -45,10 +47,9 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   try {
     const { username, email, password, roles } = req.body;
-    console.log("req.body", req.body)
     const existe = await Users.findOne({ where: { email: email } });
     if (existe) {
-      throw new Error("Registered user ");
+      throw new Error("409");
     }
 
     const response = await Users.create(
@@ -67,7 +68,9 @@ export const register = async (req, res) => {
     generateRefreshToken(newUser.id, res);
     res.status(201).json({ token, expiresIn });
   } catch (error) {
-    console.log()
+    if (error?.message==="409"){
+      return res.status(409).json({ error: "recurso no disponible" });
+    }
     return res.status(401).json({ error: error?.message });
   }
 };

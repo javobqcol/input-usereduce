@@ -20,13 +20,9 @@ export const useAxiosPrivate = () => {
       response => response,
       async (error) => {
         const prevRequest = error?.config;
-        console.log("prevRequest paso", prevRequest);
-        console.log("error response",error?.response?.status)
         if (error?.response?.status === 401 && !prevRequest?.sent) {
-          console.log("por aqui no entro nunca");
           prevRequest.sent = true;
           const newAccessToken = await refresh();
-          console.log("newAccessToken", newAccessToken);
           prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return axiosPrivate(prevRequest);
         }

@@ -2,6 +2,7 @@ import express from 'express'
 //import { router as productRoutes} from './routes/products.routes.js' 
 //import { router as userRoutes} from './routes/users.routes.js' 
 import authRoutes from './routes/auth.routes.js'
+import userRoutes from './routes/users.routes.js'
 
 import morgan from "morgan"
 import cors from 'cors'
@@ -22,4 +23,6 @@ app.use(cookieParser())
 app.use(cors(corsOptions));
 // app.use("/api/products", productRoutes)
 app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1/users", userRoutes)
+
 

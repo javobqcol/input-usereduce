@@ -33,7 +33,6 @@ export const initialStateProductRow={
 export const initialStateLogin = {
   email:"",
   password:"",
-  errMsg:""
 }
 
 export const initialStateUserReduce = {
