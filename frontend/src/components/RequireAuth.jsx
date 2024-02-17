@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/useAuth'
 export const RequireAuth = ({allowedRoles}) => {
   const {auth} = useAuth()
   const location = useLocation()
-console.log(auth)
   return (
     auth?.roles?.find(rol=>(rol.active && allowedRoles?.includes(rol.rolename)))
       ? <Outlet/>

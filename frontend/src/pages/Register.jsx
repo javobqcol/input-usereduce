@@ -11,12 +11,12 @@ export const Register = () => {
 
   const validateEmail = (email) => {
     const REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
-    console.log(REGEXP.test(email))
+
     return REGEXP.test(email)
   }
   const handleSubmit =(e) =>{
     e.preventDefault()
-    console.log("submit")
+
 
     if (!validateEmail(email)){
       return setError({

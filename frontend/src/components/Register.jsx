@@ -31,7 +31,7 @@ export const Register = () => {
         repassword: values.matchPassword,
         roles: [{ rolename: "user", active: true }],
       });
-      console.log(response);
+
       navigate("/");
       // setSuccess(true);
 

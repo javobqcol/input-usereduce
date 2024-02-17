@@ -16,47 +16,45 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 const USERS_URL = "/api/v1/users/";
 const ROLES = ["user", "moderator", "admin"];
+
 export const Users = () => {
   const [users, setUsers] = useState([]);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleClickUserActive = async(e, user) => {
-    user = {...user, active:!user.active}
-    console.log(JSON.stringify(user))
-    setUsers((users) => users.map((us) => (us.id === user.id ? user : us)));
+  const handleClickUserActive = async(e, user, index) => {
+    const updateUser = {...user, active:!user.active}
+    const updateUsers=[...users]
+    updateUsers[index] = updateUser
+    setUsers(updateUsers);
     const response = await axiosPrivate.put(`${USERS_URL}${user.id}`,JSON.stringify(user));
   }
   
   const handleClickRoles = async(e, user, rol) => {
-    console.log(rol, user);
+
     const role = user.roles.find((ro) => ro.rolename === rol);
     if (role) {
       user.roles = user.roles.map((ro) =>
         ro.rolename === rol ? { ...ro, active: !ro.active } : ro
       );
-      console.log(user.roles);
+
     } else {
       user.roles = [...user.roles, { rolename: rol, active: true }];
     }
 
     setUsers((users) => users.map((us) => (us.id === user.id ? user : us)));
-    console.log(JSON.stringify(user))
+
     const response = await axiosPrivate.put(`${USERS_URL}${user.id}`,JSON.stringify(user));
   };
 
   useEffect(() => {
-    console.log("por aqui");
+  
     const getUsers = async () => {
       try {
         const response = await axiosPrivate.get(USERS_URL);
-        console.log("response", response);
-
         setUsers(response.data);
-        console.log("response", response);
       } catch (error) {
-        console.error("error", error);
         navigate("/login", { state: { from: location }, replace: true });
       }
     };
@@ -82,7 +80,7 @@ export const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users?.map((user) => (
+            {users?.map((user, index) => (
               <TableRow
                 key={user.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -90,7 +88,7 @@ export const Users = () => {
                 <TableCell component="th" scope="row">
                   {user.username}
                 </TableCell>
-                <TableCell component="th" sx={{cursor:"pointer"}}scope="row" onClick={(e) =>handleClickUserActive(e, user)}>
+                <TableCell component="th" sx={{cursor:"pointer"}}scope="row" onClick={(e) =>handleClickUserActive(e, user, index)}>
                   {user.active? <IconButton><AccountCircleIcon/></IconButton> : <IconButton><NoAccountsIcon /></IconButton>}
 
                 </TableCell>
