@@ -1,38 +1,40 @@
 import Users from "../models/Users.js";
 import Roles from "../models/Roles.js";
+import UserToRol from "../models/UserToRol.js"
 import { compare, encrypt } from "../helpers/handleBcrypt.js";
 
 import {
   generateRefreshToken,
   generateToken,
 } from "../helpers/tokenManager.js";
+import { sequelize } from "../database/database.js";
+
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const response = await Users.findOne({
+    const user = await Users.findOne({
       where: { email: email },
       include: [
         {
           model: Roles,
-          attributes: ["rolename", "active"],
+          attributes: ["id", "rolename", "active"],
+          through: { attributes: ["active"], where: { active: true } },
+//          through: { attributes: ["active"] },
+          where: { active: true },
+          required: false
         },
       ],
+      where: { active: true },
     });
-    const user = response.toJSON();
-
-    if (!user || !user?.active) {
+//    console.log("user", user.toJSON())
+    if (!user || !user?.active || user.roles.lenght  ) {
       throw new Error("Authorization problem");
     }
     const checkPassword = await compare(password, user.password);
-
+    console.log(checkPassword)
     if (!checkPassword) {
-    
-      throw new Error("Authorization problem");
-    }
-
-    if (!user || !user?.active || !checkPassword) {
       throw new Error("Authorization problem");
     }
     const { token, expiresIn } = generateToken(user.id);
@@ -45,52 +47,42 @@ export const login = async (req, res) => {
 };
 
 export const register = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const { username, email, password, roles } = req.body;
+    const { username, email, password } = req.body;
     const existe = await Users.findOne({ where: { email: email } });
     if (existe) {
-      throw new Error("409");
+      throw new Error("Email exist");
     }
+    const roles = await Roles.findAll({
+      where:{rolename:"user"}
+    })
+    const userPass = await encrypt(password);
 
-    const response = await Users.create(
+    const newUser = await Users.create(
       {
         username: username,
         email: email,
         active: true,
-        password: await encrypt(password),
-        roles: roles,
+        password: userPass,
       },
-      { include: "roles" }
+      { transaction: t }
     );
-    const newUser = response.toJSON();
 
+    await newUser.addRoles(
+      roles.map((role) => role.id),
+      { transaction: t }
+    );
     const { token, expiresIn } = generateToken(newUser.id);
     generateRefreshToken(newUser.id, res);
     res.status(201).json({ token, expiresIn });
+    await t.commit()
   } catch (error) {
-    if (error?.message==="409"){
-      return res.status(409).json({ error: "recurso no disponible" });
-    }
+    await t.rollback();
     return res.status(401).json({ error: error?.message });
   }
 };
 
-export const infoUser = async (req, res) => {
-  try {
-    const user = await Users.findAll({
-      include: [
-        {
-          model: Roles,
-          attributes: ["id", "rolename", "active", "userId"],
-        },
-      ]
-    });
-
-    return res.status(200).json( user );
-  } catch (error) {
-    return res.status(401).json({ error: error?.message });
-  }
-};
 
 export const refreshToken = (req, res) => {
   try {

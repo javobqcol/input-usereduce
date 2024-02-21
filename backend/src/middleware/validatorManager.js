@@ -1,4 +1,5 @@
 import { validationResult, body } from "express-validator"
+
 export const validationResultExpress = (req, res, next) =>{
   const errors = validationResult(req)
     if ( !errors.isEmpty()){
@@ -10,8 +11,8 @@ export const validationResultExpress = (req, res, next) =>{
 export const bodyRegisterValidator = [
   body("email", "Format Error").trim().isEmail().normalizeEmail(),
   body("password", "Format Error").trim().isLength({ min: 5 }),
-  body("password", "Format Error").custom((value, { req }) => {
-    if (value !== req.body.repassword) {
+  body("repassword", "Format Error").custom((value, { req }) => {
+    if (value !== req.body.password) {
       throw new Error("no coinciden las contraseñas");
     }
     return value;

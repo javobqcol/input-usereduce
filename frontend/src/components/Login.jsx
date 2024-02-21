@@ -32,7 +32,7 @@ export const Login = () => {
 
       const token = response?.data?.token;
       const roles = response?.data?.roles;
-
+      console.log(roles)
       setAuth({
         email: values.email,
         password: values.password,

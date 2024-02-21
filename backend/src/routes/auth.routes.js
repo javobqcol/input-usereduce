@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { login, register, infoUser, refreshToken, logout } from "../controllers/auth.controller.js";
+import { login, register, refreshToken, logout } from "../controllers/auth.controller.js";
 import { bodyLoginValidator, bodyRegisterValidator } from "../middleware/validatorManager.js";
 import { requireToken} from "../middleware/requireToken.js";
 import { requireRefreshToken } from "../middleware/requireRefreshToken.js";
@@ -15,7 +15,6 @@ router.post(
 
 router.post("/register",bodyRegisterValidator, register);
 
-router.get("/protected", requireToken, checkRoleAuth(["admin"]), infoUser)
 router.get("/refresh",requireRefreshToken, refreshToken)
 router.get("/logout", logout)
 export default router;

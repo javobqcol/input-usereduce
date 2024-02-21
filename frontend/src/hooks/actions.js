@@ -49,8 +49,3 @@ export const initialStateUserRow={
   password:'',
   matchPassword:''
 }
-export const ROLES ={
-  "User": "user",
-  "Moderator": "moderator",
-  "Admin": "admin"
-}

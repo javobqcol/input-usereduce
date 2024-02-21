@@ -1,6 +1,7 @@
 import { refreshToken } from "../controllers/auth.controller.js";
 import Roles from "../models/Roles.js";
 import User from "../models/Users.js";
+import UserToRol from "../models/UserToRol.js";
 
 export const checkRoleAuth = (rolList) => async (req, res, next) => {
   try {
@@ -12,12 +13,17 @@ export const checkRoleAuth = (rolList) => async (req, res, next) => {
         {
           model: Roles,
           attributes: ["rolename", "active"],
+          through: { attributes: ["active"], where: { active: true } },//<--rol del usuario activo?
+//          through: { attributes: ["active"] },
+          where: { active: true }, //<--rol activo
+          required: false
         },
       ],
-    }) //aqui ya es seguro que hay un token y es valido
+      where: { active: true }, //<--usuario activo
+    }) 
     const userData = response.toJSON()
     for (const rol of rolList) {
-      if (userData.roles.find((r) => (r.rolename === rol && r.active))) {
+      if (userData.roles.find((r) => (r.rolename === rol ))) {
         //  tienes rol pa la operacion? pasa (ahora un usuario puede tener varios role y se puede dar acceso a varios roles tambien)
         req.roles = userData.roles;
         return next();

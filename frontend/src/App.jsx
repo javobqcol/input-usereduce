@@ -14,7 +14,7 @@ import { Layout } from "./components/Layout";
 import { Users } from "./components/Users";
 import { Unauthorized } from "./components/Unautorized";
 import { RequireAuth } from "./components/RequireAuth";
-import { ROLES } from "./hooks/actions";
+
 
 const navArrayLinks = [
   {
@@ -49,7 +49,7 @@ const App = () => {
             <Route path="login" element={<Login/>}/>
             <Route path="register" element={<Register/>}/>
             <Route path="unauthorized" element={<Unauthorized />} />
-            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+            <Route element={<RequireAuth allowedRoles={["admin"]} />}>
 
               <Route path="users" element={<Users />} />
             </Route>
